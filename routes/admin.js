@@ -4,6 +4,7 @@ const Admin = require('../models/admin')
 
 Router.post('/admin/signup',async(req,res)=>{
     const admin = new Admin(req.body);
+    console.log("Signup");
     try{
         await admin.save();
         const token = await admin.generateAuthToken();

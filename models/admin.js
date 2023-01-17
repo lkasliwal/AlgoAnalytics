@@ -27,7 +27,7 @@ const adminSchema=mongoose.Schema({
 
 adminSchema.pre('save', async function(next){
     if(this.isModified("password")){
-        this.password=await bcrypt.hash(this.password,10);
+        this.password=await bcrypt.hash(this.password,8);
         next();
     }
 })
