@@ -16,4 +16,4 @@ const partSchema=mongoose.Schema({
     }
  })
 
- module.exports = mongoose.model('Parts',partSchema)
+ module.exports = mongoose.model('Part',partSchema)
