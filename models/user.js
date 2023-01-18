@@ -1,7 +1,7 @@
 const mongoose=require('mongoose');
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
-const adminSchema=mongoose.Schema({
+const userSchema=mongoose.Schema({
    name:{
      type:String,
      required:true,
@@ -17,6 +17,14 @@ const adminSchema=mongoose.Schema({
      type:String,
      required:true
    },
+   verified:{
+     type: Boolean,
+     default: false
+   },
+   role:{
+    type: String,
+    default: ""
+   },
    token: [{
     token: {
       type: String,
@@ -25,21 +33,21 @@ const adminSchema=mongoose.Schema({
   }]
 })
 
-adminSchema.pre('save', async function(next){
+userSchema.pre('save', async function(next){
     if(this.isModified("password")){
         this.password=await bcrypt.hash(this.password,8);
         next();
     }
 })
 
-adminSchema.statics.findByCredentials = async function(email,password){
-    const admin = await Admin.findOne({email});
-    if(!admin)
+userSchema.statics.findByCredentials = async function(email,password){
+    const user = await Admin.findOne({email,verified:true});
+    if(!user)
         throw new Error('Unable to login');
     const isMatch = await bcrypt.compare(password,user.password);
     if(!isMatch)
         throw new Error('Unable to login');
-    return admin;
+    return user;
 }
 
 adminSchema.methods.generateAuthToken = async function(){

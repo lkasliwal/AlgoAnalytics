@@ -35,4 +35,14 @@ Router.get('/totalpart',async(req,res)=>{
     }
 })
 
+Router.get('/selectpart',async(req,res)=>{
+    try{
+        const part_name = req.body.part_name;
+        const part = await Part.findOne({part_name});
+        res.status(200).send(part);
+    }
+    catch(e){
+        res.status(401).send(e);
+    }
+})
 module.exports = Router;

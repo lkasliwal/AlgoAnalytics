@@ -13,6 +13,18 @@ const partSchema=mongoose.Schema({
     part_not_ok:{
       type:Number,
       required:true
+    },
+    precision:{
+      type: Number,
+      default: 0
+    },
+    recall: {
+      type: Number,
+      default: 0
+    },
+    map:{
+      type: Number,
+      default: 0
     }
  })
 
