@@ -4,22 +4,24 @@ const User = require('../models/user')
 
 Router.post('/user/signup',async(req,res)=>{
     const user = new User(req.body);
+    console.log(user);
     console.log("Signup");
     try{
+        console.log("Hello")
         await user.save();
-        const token = await user.generateAuthToken();
-        res.status(201).send({user,token});
+        // await user.generateAuthToken();
+        res.status(201).send();
     }
     catch(e){
         res.status(400).send(e);
     }
 })
 
-Router.post('/user/login',async (req,res)=>{
+Router.get('/user/login',async (req,res)=>{
     try{
         const user = await User.findByCredentials(req.body.email,req.body.password);
         const token = await user.generateAuthToken();
-        res.send({user,token});
+        res.status(201).send();
     }
     catch(e){   
         res.status(404).send(e);
@@ -28,7 +30,7 @@ Router.post('/user/login',async (req,res)=>{
 
 Router.get('/users',async(req,res)=>{
     try{
-        const users = await User.find({verified:false},{name:1});
+        const users = await User.find({verified:false},{name:1,_id:0,email:1});
         res.send(users);
     }
     catch(e){
@@ -38,7 +40,7 @@ Router.get('/users',async(req,res)=>{
 
 Router.put('/userverify',async(req,res)=>{
     try{
-        const user = await User.findOneAndUpdate({name:req.body.name},{verified:true,role:req.body.role});
+        const user = await User.findOneAndUpdate({name:req.body.name,email:req.body.email},{verified:true,role:req.body.role});
         res.send({'message':'User verified'});
     }
     catch(e){

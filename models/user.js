@@ -25,7 +25,7 @@ const userSchema=mongoose.Schema({
     type: String,
     default: ""
    },
-   token: [{
+   tokens: [{
     token: {
       type: String,
       required: true
@@ -41,7 +41,7 @@ userSchema.pre('save', async function(next){
 })
 
 userSchema.statics.findByCredentials = async function(email,password){
-    const user = await Admin.findOne({email,verified:true});
+    const user = await User.findOne({email,verified:true});
     if(!user)
         throw new Error('Unable to login');
     const isMatch = await bcrypt.compare(password,user.password);
@@ -50,12 +50,12 @@ userSchema.statics.findByCredentials = async function(email,password){
     return user;
 }
 
-adminSchema.methods.generateAuthToken = async function(){
-    const admin = this;
-    const token = jwt.sign({_id:admin._id},'aqualityadmin');
-    admin.tokens = admin.tokens.concat({token});
-    await admin.save();
-    return token;
+userSchema.methods.generateAuthToken = async function(){
+    const user = this;
+    const token = jwt.sign({_id:user._id},'aqualityadmin');
+    user.tokens = user.tokens.concat({token});
+    await user.save();
+    // return token;
 }
-const Admin = mongoose.model('Admin',adminSchema);
-module.exports = Admin;
+const User = mongoose.model('User',userSchema);
+module.exports = User;
