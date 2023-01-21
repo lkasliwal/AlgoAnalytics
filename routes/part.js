@@ -16,16 +16,18 @@ Router.post('/addpart',async(req,res)=>{
 Router.get('/totalpart',async(req,res)=>{
     try{
         var parts = await Part.find();
-        var totalOk,totalNok;
-        for (var part in parts){
-            totalOk += part.part_ok;
-            totalNok += part.part_not_ok;
+        console.log(parts)
+        var totalOk=0,totalNok=0;
+        for (var part=0;part<parts.length;part++){
+            console.log(part)
+            totalOk += parts[part].part_ok;
+            totalNok += parts[part].part_not_ok;
         }
         var total = totalOk+totalNok;
         const obj = {
             "total":total,
-            "part_ok":part_ok,
-            "part_not_ok":part_not_ok,
+            "part_ok":totalOk,
+            "part_not_ok":totalNok,
             "parts":parts
         }
         res.send(obj);

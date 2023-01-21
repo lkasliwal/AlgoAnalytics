@@ -2,12 +2,15 @@ const express=require('express')
 const Router=express.Router()
 const User = require('../models/user')
 
+//this api is used for 
 Router.post('/user/signup',async(req,res)=>{
     const user = new User(req.body);
     console.log("Signup");
     try{
         await user.save();
+        console.log(2);
         const token = await user.generateAuthToken();
+        console.log(3);
         res.status(201).send({user,token});
     }
     catch(e){
