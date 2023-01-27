@@ -1,5 +1,6 @@
-const express = require('express');
-const Router = express.Router();
+const express=require('express')
+const Router=express.Router()
+const User = require('../models/user');
 const Part = require('../models/parts');
 
 Router.post('/addpart',async(req,res)=>{
@@ -16,13 +17,13 @@ Router.post('/addpart',async(req,res)=>{
 Router.get('/totalpart',async(req,res)=>{
     try{
         var parts = await Part.find();
-        console.log(parts)
+        console.log(parts);
         var totalOk=0,totalNok=0;
-        for (var part=0;part<parts.length;part++){
-            console.log(part)
-            totalOk += parts[part].part_ok;
-            totalNok += parts[part].part_not_ok;
-        }
+
+        parts.forEach((part)=> {
+            totalOk += part.part_ok;
+            totalNok += part.part_not_ok;
+        });
         var total = totalOk+totalNok;
         const obj = {
             "total":total,
@@ -47,4 +48,24 @@ Router.get('/selectpart',async(req,res)=>{
         res.status(401).send(e);
     }
 })
-module.exports = Router;
+
+Router.get('/users',async(req,res)=>{
+    try{
+        const users = await User.find({verified:false},{name:1,_id:0,email:1});
+        res.send(users);
+    }
+    catch(e){
+        res.status(400).send(e);
+    }
+}),
+
+Router.put('/userverify',async(req,res)=>{
+    try{
+        const user = await User.findOneAndUpdate({name:req.body.name,email:req.body.email},{verified:true,role:req.body.role});
+        res.send({'message':'User verified'});
+    }
+    catch(e){
+        res.status(401).send(e);
+    }
+})
+module.exports=Router;
