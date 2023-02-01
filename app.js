@@ -1,14 +1,27 @@
-const express=require('express')
-const app=express()
+const express = require('express')
+const app = express()
+
+
+require('express-async-errors')
+require('dotenv').config()
 require('./dbConnection/mongoose')
-const userRouter =require('./routes/user')
-const partRouter = require('./routes/part');
+
+//const partRouter = require('./routes/part');
 const adminRouter = require('./routes/admin')
+
+const morgan = require('morgan')
+const errorHandler = require('./middlewares/errorHandler')
+const cors = require('cors')
+const userRoute = require('./routes/user')
+
+app.use(cors())
 app.use(express.json())
-app.use(userRouter);
-app.use(partRouter);
+app.use('/api/user', userRoute)
+
+app.use(errorHandler)
+//app.use(partRouter);
 app.use(adminRouter);
 
-app.listen(4000,()=>{
-    console.log(`listion on port no 4000`)
+app.listen(7000, () => {
+    console.log(`listion on port no 7000`)
 })
