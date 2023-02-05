@@ -22,6 +22,6 @@ app.use(errorHandler)
 //app.use(partRouter);
 app.use(adminRouter);
 
-app.listen(7000, () => {
-    console.log(`listion on port no 7000`)
+app.listen(2000, () => {
+    console.log(`listion on port no 2000`)
 })
