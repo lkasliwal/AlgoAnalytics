@@ -95,6 +95,7 @@ const verifyEmail = async (req, res) => {
     if (user.isVerified) return sendError(res, "user is already verified!")
 
     const token = await EmailVerificationToken.findOne({ owner: userId })
+    console.log("email verification token is",token);
     if (!token) return sendError(res, 'token not found!')
 
     const isMatched = await token.compareToken(OTP)
@@ -275,6 +276,7 @@ const resetPassword = async (req, res) => {
 
 
     user.password = newPassword;
+    
 
     await passwordResetToken.findByIdAndDelete(req.resetToken._id)
     var transport = nodemailer.createTransport({
