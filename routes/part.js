@@ -2,7 +2,7 @@ const express=require('express')
 const Router=express.Router()
 const User = require('../models/user')
 
-Router.get('/selectpart',async(req,res)=>{
+Router.get('/api/operator/selectpart',async(req,res)=>{
     try{
         const part_name = req.body.part_name;
         const part = await Part.findOne({part_name});
