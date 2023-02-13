@@ -16,8 +16,15 @@ Router.post('/addpart',async(req,res)=>{
 
 Router.get('/totalpart',async(req,res)=>{
     try{
+
+        if(req){
+            console.log("request from frontend")
+        }
         var parts = await Part.find();
-        console.log(parts);
+
+
+        //console.log(parts);
+        //console.log("api is called")
         var totalOk=0,totalNok=0;
 
         parts.forEach((part)=> {
@@ -25,13 +32,18 @@ Router.get('/totalpart',async(req,res)=>{
             totalNok += part.part_not_ok;
         });
         var total = totalOk+totalNok;
-        const obj = {
-            "total":total,
+        const obj =
+            {"total":total,
             "part_ok":totalOk,
             "part_not_ok":totalNok,
             "parts":parts
-        }
-        res.send(obj);
+            }
+        
+            
+        
+
+        
+      return  res.send(obj);
     }
     catch(e){
         res.status(401).send(e);
