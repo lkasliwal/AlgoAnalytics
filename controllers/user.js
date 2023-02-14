@@ -78,7 +78,8 @@ const create = async (req, res) => {
         user: {
             id: newUser._id,
             name: newUser.name,
-            email: newUser.email
+            email: newUser.email,
+            role:newUser.role
         }
     }
     )
@@ -131,7 +132,7 @@ const verifyEmail = async (req, res) => {
     })
     //After verification user don't have to login agin as user is genuine user so we will not redirect user to again put their credientials we will send jwt token instead
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.json({ user: { id: user._id, name: user.name, email: user.email, isVerified: user.isVerified, token: jwtToken }, message: "Your email is verified." })
+    res.json({ user: { id: user._id, name: user.name, email: user.email,role:user.role, isVerified: user.isVerified, token: jwtToken }, message: "Your email is verified." })
 }
 
 const resendEmailVerificationToken = async (req, res) => {
@@ -321,10 +322,10 @@ const signIn = async (req, res) => {
     if (!match) {
         return sendError(res, 'Incorrect mail or password');
     }
-    const { _id, name, isVerified } = user;
+    const { _id, name, isVerified,role } = user;
     const jwtToken = jwt.sign({ userId: _id }, process.env.JWT_SECRET);
 
-    return res.json({ user: { Id: _id, name, email, isVerified, token: jwtToken } })
+    return res.json({ user: { Id: _id, name,role, email, isVerified, token: jwtToken } })
 
 
 
