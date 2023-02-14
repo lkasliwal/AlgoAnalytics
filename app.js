@@ -16,7 +16,7 @@ const cors = require('cors')
 
 app.use(cors())
 app.use(express.json())
-
+app.use('/api/user', userRoute)
 app.use(errorHandler)
 app.use(partRouter);
 app.use(adminRouter);

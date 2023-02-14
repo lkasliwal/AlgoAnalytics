@@ -18,7 +18,7 @@ const userSchema=mongoose.Schema({
     type:String,
     required:true
   },
-  userType: {
+  role: {
    type: String,
    required:true,
    enum : ['user','admin'],
