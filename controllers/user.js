@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 const EmailVerificationToken = require('../models/emailVerificationToken');
 const { isValidObjectId } = require('mongoose');
-
 const sendError = require('../utils/helper');
 const PasswordResetToken = require('../models/passwordResetToken');
 const { generateRandomByte } = require('../utils/mail');
@@ -311,7 +310,7 @@ const resetPassword = async (req, res) => {
 
 const signIn = async (req, res) => {
 
-
+     if(req) console.log("requet from frontend")
     const { password, email } = req.body;
 
     const user = await User.findOne({ email });
@@ -331,5 +330,7 @@ const signIn = async (req, res) => {
 
 
 }
+
+
 
 module.exports = { create, verifyEmail, resendEmailVerificationToken, forgotPassword, sentResetPasswordStatus, resetPassword, signIn }
