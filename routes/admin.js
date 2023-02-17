@@ -2,8 +2,11 @@ const express=require('express')
 const Router=express.Router()
 const User = require('../models/user');
 const Part = require('../models/parts');
+const isAdmVerify = require('../middlewares/auth');
+const isAuth = require('../middlewares/auth');
+//const {isAuth,isAdmin} = require('../middlewares/auth');
 
-Router.post('/addpart',async(req,res)=>{
+Router.post('/addpart',isAuth,isAdmVerify,async(req,res)=>{
     const part = new Part(req.body);
     try{
         await part.save();
