@@ -8,15 +8,17 @@ const partSchema=mongoose.Schema({
     },
     part_ok:{
      type:Number,
-     required:true
+     required:true,
+     
     },
     part_not_ok:{
       type:Number,
-      required:true
+      required:true,
+      
     },
     precision:{
       type: Number,
-      default: 0
+      required:true,
     },
     recall: {
       type: Number,
