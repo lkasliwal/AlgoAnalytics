@@ -6,7 +6,7 @@ const isAdmVerify = require('../middlewares/auth');
 const isAuth = require('../middlewares/auth');
 //const {isAuth,isAdmin} = require('../middlewares/auth');
 
-Router.post('/addpart',isAuth,isAdmVerify,async(req,res)=>{
+Router.post('/api/admin/addpart',isAuth,isAdmVerify,async(req,res)=>{
     const part = new Part(req.body);
     try{
         await part.save();
@@ -17,7 +17,7 @@ Router.post('/addpart',isAuth,isAdmVerify,async(req,res)=>{
     }
 })
 
-Router.get('/totalpart',async(req,res)=>{
+Router.get('/api/admin/totalpart',async(req,res)=>{
     try{
 
         if(req){
@@ -53,7 +53,7 @@ Router.get('/totalpart',async(req,res)=>{
     }
 })
 
-Router.get('/selectpart',async(req,res)=>{
+Router.get('/api/admin/selectpart',async(req,res)=>{
     try{
         const part_name = req.body.part_name;
         const part = await Part.findOne({part_name});

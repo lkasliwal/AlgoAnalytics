@@ -13,8 +13,8 @@ const morgan = require('morgan')
 const errorHandler = require('./middlewares/errorHandler')
 const cors = require('cors')
 
-const { fetchData } = require('./routes/django-api');
-fetchData()
+// const { fetchData } = require('./routes/django-api');
+// fetchData()
 
 app.use(cors())
 app.use(express.json())
