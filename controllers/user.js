@@ -20,13 +20,13 @@ const passwordResetToken = require('../models/passwordResetToken');
 const create = async (req, res) => {
     const { name, email, password } = req.body
 
-    const oldUser = await User.findOne({ email });
-
+    const oldUser = await User.findOne({ email,isVerified:true});
     if (oldUser) return sendError(res, "This email is already in use!")
-
-    const newUser = new User({ name, email, password })
-    await newUser.save()
-
+    const oldUnverifiedUser = await User.findOne({email,isVerified:false});
+    if(!oldUnverifiedUser){
+        const newUser = new User({ name, email, password })
+        await newUser.save()
+    }
     // generate 6 digit otp
 
 
@@ -38,10 +38,15 @@ const create = async (req, res) => {
 
 
     // store otp inside our db
-    const newEmailVerificationToken = new EmailVerificationToken({ owner: newUser._id, token: OTP })
-
-    await newEmailVerificationToken.save()
-
+    const emailToken = await EmailVerificationToken.findOne({owner:newUser._id});
+    if(emailToken){
+        emailToken.token = OTP;
+        await emailToken.save();
+    }
+    else{
+        const newEmailVerificationToken = new EmailVerificationToken({ owner: newUser._id, token: OTP })
+        await newEmailVerificationToken.save()
+    }
     //   // send that otp to our user
 
     var transport = nodemailer.createTransport({
@@ -85,14 +90,15 @@ const create = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-    const { userId, OTP } = req.body
-
+    const { email, OTP } = req.body
+    const userExist = await User.findOne({email});
+    const userId = userExist._id;
     if (!isValidObjectId(userId)) return sendError(res, "Invalid user!")
 
-    const user = await User.findById(userId)
-    if (!user) return sendError(res, "user not found!", 404)
+    // const user = await User.findById(userId)
+    // if (!user) return sendError(res, "user not found!", 404)
 
-    if (user.isVerified) return sendError(res, "user is already verified!")
+    if (userExist.isVerified) return sendError(res, "user is already verified!")
 
     const token = await EmailVerificationToken.findOne({ owner: userId })
     console.log("email verification token is",token);
@@ -101,8 +107,8 @@ const verifyEmail = async (req, res) => {
     const isMatched = await token.compareToken(OTP)
     if (!isMatched) return sendError(res, 'Please submit a valid OTP!')
 
-    user.isVerified = true;
-    await user.save();
+    userExist.isVerified = true;
+    await userExist.save();
 
     await EmailVerificationToken.findByIdAndDelete(token._id);
 
@@ -118,7 +124,7 @@ const verifyEmail = async (req, res) => {
 
     var mailOptions = {
         from: 'verification@defectdetection.com',
-        to: user.email,
+        to: userExist.email,
         subject: 'Welcome Email',
         html: '<h1>Welcome to our app and thanks for choosing us.</h1>'
     }
@@ -130,21 +136,20 @@ const verifyEmail = async (req, res) => {
         }
     })
     //After verification user don't have to login agin as user is genuine user so we will not redirect user to again put their credientials we will send jwt token instead
-    const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.json({ user: { id: user._id, name: user.name, email: user.email,role:user.role, isVerified: user.isVerified, token: jwtToken }, message: "Your email is verified." })
+    const jwtToken = jwt.sign({ userId: userExist._id }, process.env.JWT_SECRET);
+    res.json({ user: { id: userExist._id, name: userExist.name, email: userExist.email,role:userExist.role, isVerified: userExist.isVerified, token: jwtToken }, message: "Your email is verified." })
 }
 
 const resendEmailVerificationToken = async (req, res) => {
-    const { userId } = req.body;
+    const { email } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findOne(email);
     if (!user) return sendError(res, "user not found!");
 
     if (user.isVerified)
         return sendError(res, "This email id is already verified!");
-
     const alreadyHasToken = await EmailVerificationToken.findOne({
-        owner: userId,
+        owner: user._id,
     });
     if (alreadyHasToken)
         return sendError(res, "Only after one hour you can request for another token!");
