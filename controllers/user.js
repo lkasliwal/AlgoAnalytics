@@ -220,7 +220,7 @@ const forgotPassword = async (req, res) => {
     });
     await newPasswordResetToken.save();
 
-    const resetPasswordUrl = `http://localhost:400/auth/reset-password?token=${token}&id=${user._id}`;
+    const resetPasswordUrl = `http://localhost:3000/passwordreset?token=${token}&id=${user._id}`;
 
     var transport = nodemailer.createTransport({
         service: 'gmail',
@@ -276,7 +276,7 @@ const resetPassword = async (req, res) => {
 
 
     user.password = newPassword;
-    
+    await user.save();
 
     await passwordResetToken.findByIdAndDelete(req.resetToken._id)
     var transport = nodemailer.createTransport({
