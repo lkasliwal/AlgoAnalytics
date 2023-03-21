@@ -310,7 +310,7 @@ const resetPassword = async (req, res) => {
 
 const signIn = async (req, res) => {
 
-     if(req) console.log("requet from frontend")
+    // if(req) console.log("requet from frontend")
     const { password, email } = req.body;
 
     const user = await User.findOne({ email });

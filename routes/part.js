@@ -4,9 +4,13 @@ const User = require('../models/user')
 const axios = require('axios');
 const apiEndpoint = process.env.Select_Part_API_ENDPOINT;
 
-Router.get('/api/operator/selectpart',async(req,res)=>{
+Router.post('/api/operator/selectpart',async(req,res)=>{
     try{
+        console.log("inside select part ", req.body);
         const part_name = req.body.part_name;
+        if (!part_name) {
+            console.log("no part_name");
+        }
         const data = {
             name: part_name
           };
@@ -20,7 +24,7 @@ Router.get('/api/operator/selectpart',async(req,res)=>{
         });
 
         const part = await Part.findOne({part_name});
-        res.status(200).send(part);
+        res.status(200).json({part_name});
     }
     catch(e){
         res.status(401).send(e);
