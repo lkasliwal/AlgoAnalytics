@@ -70,4 +70,46 @@ Router.get('/systemstatus', async (req, res) => {
     }
     res.send(obj);
 })
+
+Router.post('/api/operator/get-part-info-by-date', async (req, res) => {
+    try {
+        console.log("inside get-part-info-by-date");
+        var date = req.body.current_date;
+        console.log({date});
+        console.log("typeof(date) = ", typeof(date));
+        const part_date = await parts.find({ "part_details": { date } });
+        console.log({ part_date });
+        res.status(200).json({
+            status: 'success', data: {
+                parts: data
+            }
+        });
+    }
+    catch (e) {
+        res.status(401).send(e);
+    }
+})
+
+Router.post('/api/admin/deletepart',async(req,res)=>{
+    try{
+        console.log("inside deletepart");
+        var part_name = req.body.part_name;
+        const part = await parts.deleteOne({part_name});
+        console.log({part});
+        if (part.deletedCount == 0) {
+            return sendError(res, "Part does not exist", 208);
+        }
+        return res.status(200).json({
+            status: 'success', 
+            data: null
+        });
+    }
+    catch(e){
+        res.status(400).json({
+            status: 'fail',
+            error: e
+        });
+    }
+}),
+
 module.exports = Router;

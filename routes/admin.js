@@ -4,12 +4,10 @@ const User = require('../models/user');
 const Part = require('../models/parts');
 const isAdmVerify = require('../middlewares/auth');
 const isAuth = require('../middlewares/auth');
-//const {isAuth,isAdmin} = require('../middlewares/auth');
+const sendError = require('../utils/helper');
 
-Router.post('/api/admin/addpart',isAuth,isAdmVerify,async(req,res)=>{
-    
-        console.log("addpart request from frontend = ", req.body);
-    
+Router.post('/api/admin/addpart',async(req,res)=>{
+    console.log("addpart request from frontend = ", req.body);
     const part = new Part(req.body);
     try{
         await part.save();
@@ -70,7 +68,7 @@ Router.post('/api/admin/selectpart',async(req,res)=>{
 
 Router.get('/users',async(req,res)=>{
     try{
-        const users = await User.find({adminVerified:false},{name:1,_id:0,email:1});
+        const users = await User.find({adminVerified:false},{name:1,_id:0,email:1,role:1});
         res.send(users);
     }
     catch(e){
@@ -87,4 +85,30 @@ Router.put('/userverify',async(req,res)=>{
         res.status(401).send(e);
     }
 })
+
+Router.post('/api/admin/editrole',async(req,res)=>{
+    try{
+        console.log("inside editrole");
+        var email = req.body.email, role = req.body.role;
+        console.log({email}, {role});
+        const user = await User.findOne({email});
+        if (!user) {
+            return sendError(res, "User does not exist with this email", 208);
+        }
+        user.role = req.body.role;
+        await user.save();
+        res.status(200).json({
+            status: 'success', data: {
+                user: user
+            }
+        });
+    }
+    catch(e){
+        res.status(400).json({
+            status: 'fail',
+            error: {e}
+        });
+    }
+}),
+
 module.exports=Router;
