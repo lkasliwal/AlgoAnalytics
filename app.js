@@ -26,5 +26,5 @@ app.use(adminRouter);
 // app.use(django)
 
 app.listen(4000, () => {
-    console.log(`listion on port no 4000`)
+    console.log(`listening on port no 4000`);
 })
