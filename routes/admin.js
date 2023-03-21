@@ -70,7 +70,7 @@ Router.post('/api/admin/selectpart',async(req,res)=>{
 
 Router.get('/users',async(req,res)=>{
     try{
-        const users = await User.find({adminVerified:false},{name:1,_id:0,email:1});
+        const users = await User.find({adminVerified:false},{name:1,_id:0,email:1,role:1});
         res.send(users);
     }
     catch(e){
