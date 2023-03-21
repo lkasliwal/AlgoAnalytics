@@ -7,6 +7,9 @@ const isAuth = require('../middlewares/auth');
 //const {isAuth,isAdmin} = require('../middlewares/auth');
 
 Router.post('/api/admin/addpart',isAuth,isAdmVerify,async(req,res)=>{
+    
+        console.log("addpart request from frontend = ", req.body);
+    
     const part = new Part(req.body);
     try{
         await part.save();
@@ -20,9 +23,9 @@ Router.post('/api/admin/addpart',isAuth,isAdmVerify,async(req,res)=>{
 Router.get('/api/admin/totalpart',async(req,res)=>{
     try{
 
-        if(req){
-            console.log("request from frontend")
-        }
+        // if(req){
+        //     console.log("request from frontend")
+        // }
         var parts = await Part.find();
 
 
@@ -53,7 +56,8 @@ Router.get('/api/admin/totalpart',async(req,res)=>{
     }
 })
 
-Router.get('/api/admin/selectpart',async(req,res)=>{
+Router.post('/api/admin/selectpart',async(req,res)=>{
+    console.log("inside select part ", req.body.part_name);
     try{
         const part_name = req.body.part_name;
         const part = await Part.findOne({part_name});
