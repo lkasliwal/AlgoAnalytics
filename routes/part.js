@@ -14,10 +14,11 @@ Router.post('/api/operator/selectpart',async(req,res)=>{
         const data = {
             name: part_name
           };
-        axios.get(apiEndpoint,{params:data})
+        apiEndpoint=apiEndpoint+part_name;
+        var part_ok_not_ok="";
+        axios.get(apiEndpoint)
         .then(response => {
-            // part_ok_not_ok=response.data
-            // console.log(response.data);
+            part_ok_not_ok=response.data;
         })
         .catch(error => {
             console.log(error);

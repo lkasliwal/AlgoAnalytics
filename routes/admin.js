@@ -70,7 +70,7 @@ Router.post('/api/admin/selectpart',async(req,res)=>{
 
 Router.get('/users',async(req,res)=>{
     try{
-        const users = await User.find({verified:false},{name:1,_id:0,email:1});
+        const users = await User.find({adminVerified:false},{name:1,_id:0,email:1});
         res.send(users);
     }
     catch(e){
@@ -80,7 +80,7 @@ Router.get('/users',async(req,res)=>{
 
 Router.put('/userverify',async(req,res)=>{
     try{
-        const user = await User.findOneAndUpdate({name:req.body.name,email:req.body.email},{verified:true,role:req.body.role});
+        const user = await User.findOneAndUpdate({name:req.body.name,email:req.body.email},{adminVerified:true,role:req.body.role});
         res.send({'message':'User verified'});
     }
     catch(e){
