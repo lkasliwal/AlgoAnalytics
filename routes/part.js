@@ -3,6 +3,7 @@ const Router = express.Router()
 const User = require('../models/user')
 const axios = require('axios');
 const sendError = require('../utils/helper');
+const parts = require('../models/parts');
 
 const fetchDataFromDjango = async (URL) => {
     try {
@@ -20,7 +21,7 @@ Router.post('/api/operator/selectpart', async (req, res) => {
         const apiEndpoint = process.env.SELECT_PART_API_ENDPOINT;
         const part_name = req.body.part_name;
         const fullUrl = `${apiEndpoint}/${part_name}`;
-        console.log({ apiEndpoint }, { fullUrl }, {part_name});
+        console.log({ apiEndpoint }, { fullUrl }, { part_name });
 
         var result = fetchDataFromDjango(fullUrl);
         // result = await result.json();
@@ -36,6 +37,25 @@ Router.post('/api/operator/selectpart', async (req, res) => {
         //     .catch(error => {
         //         console.log(error);
         //     });
+    }
+    catch (e) {
+        res.status(401).send(e);
+    }
+})
+
+Router.post('/api/operator/get-part-info-by-date', async (req, res) => {
+    try {
+        console.log("inside get-part-info-by-date");
+        var date = req.body.current_date;
+        console.log({date});
+        console.log("typeof(date) = ", typeof(date));
+        const part_date = await parts.find({ "part_details": { date } });
+        console.log({ part_date });
+        res.status(200).json({
+            status: 'success', data: {
+                parts: data
+            }
+        });
     }
     catch (e) {
         res.status(401).send(e);

@@ -17,7 +17,7 @@ const partSchema = mongoose.Schema({
   },
   part_details: {
     part_date: {
-      type: Date,
+      type: String,
     }
   }
 })
