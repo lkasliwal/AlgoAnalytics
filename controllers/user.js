@@ -321,7 +321,9 @@ const signIn = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) return sendError(res, 'Incorrect mail or password ');
-
+    if(!user.isVerified){
+        return sendError(res,"Register first");
+    }
     const match = await user.comparePassword(password);
     if (!match) {
         return sendError(res, 'Incorrect mail or password');
