@@ -5,12 +5,9 @@ const Part = require('../models/parts');
 const isAdmVerify = require('../middlewares/auth');
 const isAuth = require('../middlewares/auth');
 const sendError = require('../utils/helper');
-//const {isAuth,isAdmin} = require('../middlewares/auth');
 
-Router.post('/api/admin/addpart',isAuth,isAdmVerify,async(req,res)=>{
-    
-        console.log("addpart request from frontend = ", req.body);
-    
+Router.post('/api/admin/addpart',async(req,res)=>{
+    console.log("addpart request from frontend = ", req.body);
     const part = new Part(req.body);
     try{
         await part.save();
