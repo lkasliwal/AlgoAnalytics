@@ -8,11 +8,11 @@ const partSchema = mongoose.Schema({
   },
   part_ok: {
     type: Number,
-    required: true,
+    required: false,
   },
   part_not_ok: {
     type: Number,
-    required: true,
+    required: false,
   },
   part_details_datewise: [
     {

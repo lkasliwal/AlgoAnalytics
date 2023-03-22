@@ -14,8 +14,9 @@ const create = async (req, res) => {
     const oldUser = await User.findOne({ email, isVerified: true });
     if (oldUser) return sendError(res, "This email is already in use!")
     const oldUnverifiedUser = await User.findOne({ email, isVerified: false });
+    var newUser=oldUnverifiedUser;
     if (!oldUnverifiedUser) {
-        const newUser = new User({ name, email, password })
+        newUser = new User({ name, email, password })
         await newUser.save()
     }
     // generate 6 digit otp
@@ -38,7 +39,7 @@ const create = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "tnirmal@algoanalytics.com",
+            user: "harshalrajput312@gmail.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -77,14 +78,14 @@ const verifyEmail = async (req, res) => {
     // const user = await User.findById(userId)
     // if (!user) return sendError(res, "user not found!", 404)
 
-    if (userExist.isVerified) return sendError(res, "user is already verified!")
+    if (userExist.isVerified) return sendError(res, "user is already verified!",413)
 
     const token = await EmailVerificationToken.findOne({ owner: userId })
     console.log("email verification token is", token);
     if (!token) return sendError(res, 'token not found!')
 
     const isMatched = await token.compareToken(OTP)
-    if (!isMatched) return sendError(res, 'Please submit a valid OTP!')
+    if (!isMatched) return sendError(res, 'Please submit a valid OTP!',414)
 
     userExist.isVerified = true;
     await userExist.save();
@@ -94,7 +95,7 @@ const verifyEmail = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "tnirmal@algoanalytics.com",
+            user: "harshalrajput312@gmail.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -120,7 +121,7 @@ const verifyEmail = async (req, res) => {
 const resendEmailVerificationToken = async (req, res) => {
     const { email } = req.body;
 
-    const user = await User.findOne(email);
+    const user = await User.findOne({email});
     if (!user) return sendError(res, "user not found!");
 
     if (user.isVerified)
@@ -147,7 +148,7 @@ const resendEmailVerificationToken = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "tnirmal@algoanalytics.com",
+            user: "harshalrajput312@gmail.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -202,7 +203,7 @@ const forgotPassword = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "tnirmal@algoanalytics.com",
+            user: "harshalrajput312@gmail.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -251,7 +252,7 @@ const resetPassword = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "tnirmal@algoanalytics.com",
+            user: "harshalrajput312@gmail.com",
             pass: "legbrnxgxemrebha"
         }
     });
