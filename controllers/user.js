@@ -54,7 +54,7 @@ const create = async (req, res) => {
         service: 'gmail',
 
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -117,7 +117,7 @@ const verifyEmail = async (req, res) => {
         service: 'gmail',
 
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -175,7 +175,7 @@ const resendEmailVerificationToken = async (req, res) => {
         service: 'gmail',
 
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -230,7 +230,7 @@ const forgotPassword = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -287,7 +287,7 @@ const resetPassword = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });

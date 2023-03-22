@@ -9,7 +9,7 @@ const generateTranporter=()=>{
         host: "smtp.mailtrap.io",
         port: 2525,
         auth: {
-          user: "harshalrajput312@GMAIL.COM",
+          user: "tnirmal@algoanalytics.com",
           pass: "legbrnxgxemrebha"
         }
       });
