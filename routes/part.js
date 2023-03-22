@@ -6,7 +6,6 @@ const sendError = require('../utils/helper');
 const parts = require('../models/parts');
 const constants = require('../constants/constants');
 
-
 const fetchDataFromDjango = async (URL) => {
     try {
         console.log("inside fetchDataFromDjango");
@@ -78,7 +77,7 @@ Router.post('/api/operator/selectpart', async (req, res) => {
                 if (response.data.conveyor == false) {
                     const currentDate = getCurrentDate();
                     let currentPart = await parts.findOne({ part_name: part_name });
-                    console.log({currentPart});
+                    console.log({ currentPart });
                     currentPart.part_ok += constants.part_ok;
                     currentPart.part_not_ok += constants.part_not_ok;
                     var datewiseData = {
@@ -89,7 +88,7 @@ Router.post('/api/operator/selectpart', async (req, res) => {
                     currentPart.part_details_datewise.push(datewiseData);
                     await currentPart.save();
                     constants.part_ok = 0, constants.part_not_ok = 0;
-                } 
+                }
             })
             .catch(error => {
                 console.log("selectpart error = ", error);

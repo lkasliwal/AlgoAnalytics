@@ -1,5 +1,5 @@
-const express=require('express')
-const Router=express.Router()
+const express = require('express')
+const Router = express.Router()
 const multer = require('multer');
 const AdmZip = require('adm-zip');
 
@@ -17,5 +17,3 @@ Router.post('/api/upload', upload.single('file'), (req, res) => {
   // Send a response back to the client
   res.json({ message: 'File uploaded and extracted successfully' });
 });
-
-
