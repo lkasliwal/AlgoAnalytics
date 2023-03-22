@@ -16,7 +16,7 @@ const partSchema = mongoose.Schema({
   },
   part_details_datewise: [
     {
-      date: String,
+      part_date: String,
       part_ok_total: Number,
       part_not_ok_total: Number
     }

@@ -82,7 +82,7 @@ Router.post('/api/operator/selectpart', async (req, res) => {
                     currentPart.part_ok += constants.part_ok;
                     currentPart.part_not_ok += constants.part_not_ok;
                     var datewiseData = {
-                        "part_date": getCurrentDate,
+                        "part_date": currentDate,
                         "part_ok_total": constants.part_ok,
                         "part_not_ok_total": constants.part_not_ok
                     };
