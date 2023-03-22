@@ -24,6 +24,21 @@ const printResultDetails = (result) => {
     console.log("result.urlList = ", result.urlList);
 }
 
+const getCurrentDate = () => {
+    const date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    let currentDate = `${day}-${month}-${year}`;
+    console.log({ currentDate });
+    return currentDate;
+}
+
+const getCurrentPart = async (part_name) => {
+    const currentPart = await parts.findOne({ part_name: part_name });
+    return currentPart;
+}
+
 // Router.post('/api/operator/selectpart', async (req, res) => {
 //     try {
 //         console.log("inside select part ", req.body.part_name);
@@ -51,18 +66,30 @@ Router.post('/api/operator/selectpart', async (req, res) => {
         const fullUrl = `${apiEndpoint}/${part_name}`;
         console.log({ apiEndpoint }, { fullUrl }, { part_name });
         axios.get(fullUrl)
-            .then(response => {
+            .then(async (response) => {
                 console.log("selectpart response.data = ", response.data);
                 if (!response || !response.data) {
                     return sendError(res, "response is null", 400);
                 }
+                constants.part_ok += response.data.ok;
+                constants.part_not_ok += response.data.nok;
+                console.log(constants.part_ok, " ", constants.part_not_ok);
+                response.data.conveyor = false;
                 if (response.data.conveyor == false) {
-                    
-                } else {
-                    constants.part_ok += response.data.ok;
-                    constants.part_not_ok += response.data.nok;
-                    console.log(constants.part_ok, " ", constants.part_not_ok);
-                }
+                    const currentDate = getCurrentDate();
+                    let currentPart = await parts.findOne({ part_name: part_name });
+                    console.log({currentPart});
+                    currentPart.part_ok += constants.part_ok;
+                    currentPart.part_not_ok += constants.part_not_ok;
+                    var datewiseData = {
+                        "part_date": getCurrentDate,
+                        "part_ok_total": constants.part_ok,
+                        "part_not_ok_total": constants.part_not_ok
+                    };
+                    currentPart.part_details_datewise.push(datewiseData);
+                    await currentPart.save();
+                    constants.part_ok = 0, constants.part_not_ok = 0;
+                } 
             })
             .catch(error => {
                 console.log("selectpart error = ", error);
@@ -121,6 +148,6 @@ Router.post('/api/admin/deletepart', async (req, res) => {
             error: e
         });
     }
-}),
+})
 
 module.exports = Router;
