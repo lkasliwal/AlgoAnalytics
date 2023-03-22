@@ -9,17 +9,18 @@ const partSchema = mongoose.Schema({
   part_ok: {
     type: Number,
     required: true,
-
   },
   part_not_ok: {
     type: Number,
     required: true,
   },
-  part_details: {
-    part_date: {
-      type: String,
+  part_details_datewise: [
+    {
+      date: String,
+      part_ok_total: Number,
+      part_not_ok_total: Number
     }
-  }
+  ]
 })
 
 module.exports = mongoose.model('Part', partSchema)
