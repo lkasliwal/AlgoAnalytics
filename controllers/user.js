@@ -1,6 +1,3 @@
-
-
-
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
@@ -12,86 +9,68 @@ const PasswordResetToken = require('../models/passwordResetToken');
 const { generateRandomByte } = require('../utils/mail');
 const passwordResetToken = require('../models/passwordResetToken');
 
-
-
-
-
-
 const create = async (req, res) => {
     const { name, email, password } = req.body
-
-    const oldUser = await User.findOne({ email,isVerified:true});
+    const oldUser = await User.findOne({ email, isVerified: true });
     if (oldUser) return sendError(res, "This email is already in use!")
-    const oldUnverifiedUser = await User.findOne({email,isVerified:false});
-    if(!oldUnverifiedUser){
+    const oldUnverifiedUser = await User.findOne({ email, isVerified: false });
+    if (!oldUnverifiedUser) {
         const newUser = new User({ name, email, password })
         await newUser.save()
     }
     // generate 6 digit otp
-
-
     let OTP = "";
     for (let i = 1; i <= 6; i++) {
         const randomVal = Math.round(Math.random() * 9);
         OTP += randomVal;
     }
-
-
     // store otp inside our db
-    const emailToken = await EmailVerificationToken.findOne({owner:newUser._id});
-    if(emailToken){
+    const emailToken = await EmailVerificationToken.findOne({ owner: newUser._id });
+    if (emailToken) {
         emailToken.token = OTP;
         await emailToken.save();
     }
-    else{
+    else {
         const newEmailVerificationToken = new EmailVerificationToken({ owner: newUser._id, token: OTP })
         await newEmailVerificationToken.save()
     }
-    //   // send that otp to our user
-
+    // send that otp to our user
     var transport = nodemailer.createTransport({
-
         service: 'gmail',
-
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
-
     var mailOptions = {
         from: 'verification@defectdetection.com',
         to: newUser.email,
         subject: 'Email Verification',
         html: `
-      <p>You verification OTP</p>
-      <h1>${OTP}</h1>
-    `
+            <p>You verification OTP</p>
+            <h1>${OTP}</h1>
+        `
     }
-
     transport.sendMail(mailOptions, function (err, info) {
         if (err) {
             console.log(err)
         } else {
             console.log('email was successfully sent to user ')
         }
-
     })
-
     res.status(201).json({
         user: {
             id: newUser._id,
             name: newUser.name,
             email: newUser.email,
-            role:newUser.role
+            role: newUser.role
         }
-    }
-    )
+    })
 };
 
 const verifyEmail = async (req, res) => {
     const { email, OTP } = req.body
-    const userExist = await User.findOne({email});
+    const userExist = await User.findOne({ email });
     const userId = userExist._id;
     if (!isValidObjectId(userId)) return sendError(res, "Invalid user!")
 
@@ -101,7 +80,7 @@ const verifyEmail = async (req, res) => {
     if (userExist.isVerified) return sendError(res, "user is already verified!")
 
     const token = await EmailVerificationToken.findOne({ owner: userId })
-    console.log("email verification token is",token);
+    console.log("email verification token is", token);
     if (!token) return sendError(res, 'token not found!')
 
     const isMatched = await token.compareToken(OTP)
@@ -113,11 +92,9 @@ const verifyEmail = async (req, res) => {
     await EmailVerificationToken.findByIdAndDelete(token._id);
 
     var transport = nodemailer.createTransport({
-
         service: 'gmail',
-
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -135,9 +112,9 @@ const verifyEmail = async (req, res) => {
             console.log("welcome msg wa sent to user")
         }
     })
-    //After verification user don't have to login agin as user is genuine user so we will not redirect user to again put their credientials we will send jwt token instead
+    // After verification user don't have to login agin as user is genuine user so we will not redirect user to again put their credientials we will send jwt token instead
     const jwtToken = jwt.sign({ userId: userExist._id }, process.env.JWT_SECRET);
-    res.json({ user: { id: userExist._id, name: userExist.name, email: userExist.email,role:userExist.role, isVerified: userExist.isVerified, token: jwtToken }, message: "Your email is verified." })
+    res.json({ user: { id: userExist._id, name: userExist.name, email: userExist.email, role: userExist.role, isVerified: userExist.isVerified, token: jwtToken }, message: "Your email is verified." })
 }
 
 const resendEmailVerificationToken = async (req, res) => {
@@ -154,28 +131,23 @@ const resendEmailVerificationToken = async (req, res) => {
     if (alreadyHasToken)
         return sendError(res, "Only after one hour you can request for another token!");
 
-    //    generate otp
+    // generate otp
     let OTP = "";
     for (let i = 1; i <= 6; i++) {
         const randomVal = Math.round(Math.random() * 9);
         OTP += randomVal;
     }
 
-    //   // store otp inside our db
+    // store otp inside our db
     const newEmailVerificationToken = new EmailVerificationToken({ owner: user._id, token: OTP })
     console.log(newEmailVerificationToken.owner._id)
     await newEmailVerificationToken.save()
 
-    //   // send that otp to our user
-
-
-
+    // send that otp to our user
     var transport = nodemailer.createTransport({
-
         service: 'gmail',
-
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -184,9 +156,9 @@ const resendEmailVerificationToken = async (req, res) => {
         to: user.email,
         subject: 'Email Verification',
         html: `
-      <p>You verification OTP</p>
-      <h1>${OTP}</h1>
-    `
+            <p>You verification OTP</p>
+            <h1>${OTP}</h1>
+        `
     }
 
     transport.sendMail(mailOptions, function (err, res) {
@@ -230,7 +202,7 @@ const forgotPassword = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
@@ -239,9 +211,8 @@ const forgotPassword = async (req, res) => {
         to: user.email,
         subject: 'Reset Password Link',
         html: `
-         <p>click here to reset password</p>
-         <a href='${resetPasswordUrl}'>Change Password</a>
-           
+            <p>click here to reset password</p>
+            <a href='${resetPasswordUrl}'>Change Password</a>
          `
     }
 
@@ -256,7 +227,6 @@ const forgotPassword = async (req, res) => {
     res.json({
         message: "Reset Password Link send to your email.",
     });
-
 }
 
 const sentResetPasswordStatus = (req, res) => {
@@ -272,13 +242,7 @@ const resetPassword = async (req, res) => {
     console.log(userId)
     const matched = await user.comparePassword(newPassword);
 
-
-
     if (matched) return sendError(res, "Please enter new password other than older one!!!")
-
-
-
-
 
     user.password = newPassword;
     await user.save();
@@ -287,18 +251,17 @@ const resetPassword = async (req, res) => {
     var transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "harshalrajput312@gmail.com",
+            user: "tnirmal@algoanalytics.com",
             pass: "legbrnxgxemrebha"
         }
     });
+
     var mailOptions = {
         from: 'Random@defectdetection.com',
         to: user.email,
         subject: ' Password Reset ',
         html: `
-        <h1> Password  reset successfully</h1>
-        
-          
+            <h1> Password  reset successfully</h1>
         `
     }
 
@@ -314,28 +277,23 @@ const resetPassword = async (req, res) => {
 }
 
 const signIn = async (req, res) => {
-
     // if(req) console.log("requet from frontend")
     const { password, email } = req.body;
 
     const user = await User.findOne({ email });
 
     if (!user) return sendError(res, 'Incorrect mail or password ');
-    if(!user.isVerified){
-        return sendError(res,"Register first");
+    if (!user.isVerified) {
+        return sendError(res, "Register first");
     }
     const match = await user.comparePassword(password);
     if (!match) {
         return sendError(res, 'Incorrect mail or password');
     }
-    const { _id, name, isVerified,role } = user;
+    const { _id, name, isVerified, role } = user;
     const jwtToken = jwt.sign({ userId: _id }, process.env.JWT_SECRET);
 
-    return res.json({ user: { Id: _id, name,role, email, isVerified, token: jwtToken } })
-
-
-
-
+    return res.json({ user: { Id: _id, name, role, email, isVerified, token: jwtToken } })
 }
 
 

@@ -8,7 +8,6 @@ const { userValidator, validate, ValidatePassword, signInValidator } = require('
 
 require('../dbConnection/mongoose')
 
-
 Router.post('/create', userValidator, validate, create)
 Router.post('/verify-email', verifyEmail)
 Router.post('/resend-email-verification-token', resendEmailVerificationToken)
