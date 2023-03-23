@@ -103,16 +103,27 @@ Router.post('/api/parts/selectpart', async (req, res) => {
 Router.post('/api/parts/get-part-info-by-date', async (req, res) => {
     try {
         console.log("inside /api/parts/get-part-info-by-date");
-        var date = req.body.current_date;
-        console.log({ date });
-        console.log("typeof(date) = ", typeof (date));
-        const part_date = await parts.find({ "part_details": { date } });
+        const part_date = req.body.date;
         console.log({ part_date });
-        res.status(200).json({
-            status: 'success', data: {
-                parts: data
-            }
-        });
+        // console.log("typeof(part_date) = ", typeof (part_date));
+        const partData = await parts.find(
+            { part_details_datewise: [{ part_date }] }
+        );
+        console.log({ partData });
+        if (partData == {}) {
+            res.status(204).json({
+                status: 'success',
+                data: null
+            });
+        } else {
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    partData
+                }
+            });
+        }
+
     }
     catch (e) {
         res.status(401).send(e);
