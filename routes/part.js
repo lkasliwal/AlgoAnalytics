@@ -57,9 +57,9 @@ const getCurrentPart = async (part_name) => {
 //     }
 // })
 
-Router.post('/api/operator/selectpart', async (req, res) => {
+Router.post('/api/parts/selectpart', async (req, res) => {
     try {
-        console.log("inside select part ", req.body.part_name);
+        console.log("inside /api/parts/selectpart", req.body.part_name);
         const part_name = req.body.part_name;
         const apiEndpoint = process.env.SELECT_PART_API_ENDPOINT;
         const fullUrl = `${apiEndpoint}/${part_name}`;
@@ -73,6 +73,7 @@ Router.post('/api/operator/selectpart', async (req, res) => {
                 constants.part_ok += response.data.ok;
                 constants.part_not_ok += response.data.nok;
                 console.log(constants.part_ok, " ", constants.part_not_ok);
+                // Enable this line to test for storing datewise part details manually 
                 response.data.conveyor = false;
                 if (response.data.conveyor == false) {
                     const currentDate = getCurrentDate();
@@ -99,26 +100,37 @@ Router.post('/api/operator/selectpart', async (req, res) => {
     }
 })
 
-Router.post('/api/operator/get-part-info-by-date', async (req, res) => {
+Router.post('/api/parts/get-part-info-by-date', async (req, res) => {
     try {
-        console.log("inside get-part-info-by-date");
-        var date = req.body.current_date;
-        console.log({ date });
-        console.log("typeof(date) = ", typeof (date));
-        const part_date = await parts.find({ "part_details": { date } });
+        console.log("inside /api/parts/get-part-info-by-date");
+        const part_date = req.body.date;
         console.log({ part_date });
-        res.status(200).json({
-            status: 'success', data: {
-                parts: data
-            }
-        });
+        // console.log("typeof(part_date) = ", typeof (part_date));
+        const partData = await parts.find(
+            { part_details_datewise: [{ part_date }] }
+        );
+        console.log({ partData });
+        if (partData == {}) {
+            res.status(204).json({
+                status: 'success',
+                data: null
+            });
+        } else {
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    partData
+                }
+            });
+        }
+
     }
     catch (e) {
         res.status(401).send(e);
     }
 })
 
-Router.get('/systemstatus', async (req, res) => {
+Router.get('/api/operator/systemstatus', async (req, res) => {
     var obj = {
         "conveyor": "Green",
         "lights": "red",
@@ -129,14 +141,14 @@ Router.get('/systemstatus', async (req, res) => {
 
 Router.post('/api/admin/deletepart', async (req, res) => {
     try {
-        console.log("inside deletepart");
+        console.log("inside /api/admin/deletepart");
         var part_name = req.body.part_name;
         const part = await parts.deleteOne({ part_name });
         console.log({ part });
         if (part.deletedCount == 0) {
             return sendError(res, "Part does not exist", 208);
         }
-        return res.status(200).json({
+        res.status(200).json({
             status: 'success',
             data: null
         });
