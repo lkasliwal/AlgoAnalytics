@@ -57,9 +57,9 @@ const getCurrentPart = async (part_name) => {
 //     }
 // })
 
-Router.post('/api/operator/selectpart', async (req, res) => {
+Router.post('/api/parts/selectpart', async (req, res) => {
     try {
-        console.log("inside select part ", req.body.part_name);
+        console.log("inside /api/parts/selectpart", req.body.part_name);
         const part_name = req.body.part_name;
         const apiEndpoint = process.env.SELECT_PART_API_ENDPOINT;
         const fullUrl = `${apiEndpoint}/${part_name}`;
@@ -73,6 +73,7 @@ Router.post('/api/operator/selectpart', async (req, res) => {
                 constants.part_ok += response.data.ok;
                 constants.part_not_ok += response.data.nok;
                 console.log(constants.part_ok, " ", constants.part_not_ok);
+                // Enable this line to test for storing datewise part details manually 
                 response.data.conveyor = false;
                 if (response.data.conveyor == false) {
                     const currentDate = getCurrentDate();
@@ -99,9 +100,9 @@ Router.post('/api/operator/selectpart', async (req, res) => {
     }
 })
 
-Router.post('/api/operator/get-part-info-by-date', async (req, res) => {
+Router.post('/api/parts/get-part-info-by-date', async (req, res) => {
     try {
-        console.log("inside get-part-info-by-date");
+        console.log("inside /api/parts/get-part-info-by-date");
         var date = req.body.current_date;
         console.log({ date });
         console.log("typeof(date) = ", typeof (date));
@@ -118,35 +119,13 @@ Router.post('/api/operator/get-part-info-by-date', async (req, res) => {
     }
 })
 
-Router.get('/systemstatus', async (req, res) => {
+Router.get('/api/operator/systemstatus', async (req, res) => {
     var obj = {
         "conveyor": "Green",
         "lights": "red",
         "sensors": "red"
     }
     res.send(obj);
-})
-
-Router.post('/api/admin/deletepart', async (req, res) => {
-    try {
-        console.log("inside deletepart");
-        var part_name = req.body.part_name;
-        const part = await parts.deleteOne({ part_name });
-        console.log({ part });
-        if (part.deletedCount == 0) {
-            return sendError(res, "Part does not exist", 208);
-        }
-        return res.status(200).json({
-            status: 'success',
-            data: null
-        });
-    }
-    catch (e) {
-        res.status(400).json({
-            status: 'fail',
-            error: e
-        });
-    }
 })
 
 module.exports = Router;
