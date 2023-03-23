@@ -128,4 +128,26 @@ Router.get('/api/operator/systemstatus', async (req, res) => {
     res.send(obj);
 })
 
+Router.post('/api/admin/deletepart', async (req, res) => {
+    try {
+        console.log("inside /api/admin/deletepart");
+        var part_name = req.body.part_name;
+        const part = await parts.deleteOne({ part_name });
+        console.log({ part });
+        if (part.deletedCount == 0) {
+            return sendError(res, "Part does not exist", 208);
+        }
+        res.status(200).json({
+            status: 'success',
+            data: null
+        });
+    }
+    catch (e) {
+        res.status(400).json({
+            status: 'fail',
+            error: e
+        });
+    }
+})
+
 module.exports = Router;

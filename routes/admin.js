@@ -4,7 +4,6 @@ const User = require('../models/user');
 const Part = require('../models/parts');
 const isAdmVerify = require('../middlewares/auth');
 const isAuth = require('../middlewares/auth');
-//const {isAuth,isAdmin} = require('../middlewares/auth');
 const multer = require('multer');
 const AdmZip = require('adm-zip');
 const path = require('path');
@@ -131,37 +130,15 @@ Router.get('/users', async (req, res) => {
   catch (e) {
     res.status(400).send(e);
   }
-}),
+})
 
-  Router.put('/userverify', async (req, res) => {
-    try {
-      const user = await User.findOneAndUpdate({ name: req.body.name, email: req.body.email }, { adminVerified: true, role: req.body.role });
-      res.send({ 'message': 'User verified' });
-    }
-    catch (e) {
-      res.status(401).send(e);
-    }
-  })
-
-Router.post('/api/admin/deletepart', async (req, res) => {
+Router.put('/userverify', async (req, res) => {
   try {
-    console.log("inside /api/admin/deletepart");
-    var part_name = req.body.part_name;
-    const part = await parts.deleteOne({ part_name });
-    console.log({ part });
-    if (part.deletedCount == 0) {
-      return sendError(res, "Part does not exist", 208);
-    }
-    res.status(200).json({
-      status: 'success',
-      data: null
-    });
+    const user = await User.findOneAndUpdate({ name: req.body.name, email: req.body.email }, { adminVerified: true, role: req.body.role });
+    res.send({ 'message': 'User verified' });
   }
   catch (e) {
-    res.status(400).json({
-      status: 'fail',
-      error: e
-    });
+    res.status(401).send(e);
   }
 })
 
