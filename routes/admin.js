@@ -51,7 +51,8 @@ Router.post('/api/admin/addpart', upload.single('file'), async (req, res) => {
       if (zipEntry.isDirectory) {
         fs.mkdirSync(outputPath, { recursive: true });
       } else {
-        zip.extractEntryTo(zipEntry, 'uploads/', false, true);
+        let zippath = "uploads/"+part_name+'_extracted';
+        zip.extractEntryTo(zipEntry, zippath, true, true);
       }
     });
     // Extract the contents of the zip file to a new folder
