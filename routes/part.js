@@ -182,18 +182,67 @@ Router.post('/api/parts/parts-info-by-date', async (req, res) => {
         console.log("inside /api/parts/parts-info-by-date");
         const { part_names, part_date } = req.body;
         console.log({ part_names }, { part_date });
-        const partsData = await parts.find(
-            { part_details_datewise: [{ part_date }] }
-        );
-        console.log({ partsData });
-        res.status(200).json({
-            status: 'success',
-            data: {
-                partsData
+        if (part_names.length == 0) {
+            return sendError(res, "There are no parts to query at the moment!. Please try again later!.", 400);
+        }
+        const partsDataArray = [];
+        let size = 0;
+        let part_ok_combined = 0, part_not_ok_combined = 0;
+        for (let i = 0; i < part_names.length; i++) {
+            const part_name = part_names[i];
+            const part = await parts.findOne({ part_name });
+            if (!part) continue;
+            // part_ok_combined += part.part_ok;
+            // part_not_ok_combined += part.part_not_ok;
+            let modifiedPartDetails = await part.part_details_datewise;
+            modifiedPartDetails = await modifiedPartDetails.filter(
+                function (e) {
+                    if (e.part_date === part_date) {
+                        part_ok_combined += e.part_ok_total;
+                        part_not_ok_combined += e.part_not_ok_total;
+                        return e;
+                    }
+                    // return (e.part_date === part_date);
+                }
+            );
+            if (modifiedPartDetails.length) {
+                size += modifiedPartDetails.length;
+                // part_ok_combined += modifiedPartDetails[0].part_ok_total;
+                // part_not_ok_combined += modifiedPartDetails[0].part_not_ok_total;
             }
+            // console.log({ modifiedPartDetails }, { size });
+            part.part_details_datewise = modifiedPartDetails;
+            partsDataArray.push(part);
+        }
+        console.log({ partsDataArray });
+        const partsData = JSON.parse(JSON.stringify(partsDataArray));
+        console.log({ partsData });
+        if (size == 0) {
+            return res.status(200).json({
+                status: 'success',
+                message: "No Part Details found for this date!. Please try choosing a different date.",
+                results: 0,
+                part_ok_total: 0,
+                part_not_ok_total: 0,
+                data: null
+            });
+        } else {
+            // console.log({ part_ok_combined }, { part_not_ok_combined });
+            return res.status(200).json({
+                status: 'success',
+                results: size,
+                part_ok_total: part_ok_combined,
+                part_not_ok_total: part_not_ok_combined,
+                data: {
+                    partsData
+                }
+            });
+        }
+    } catch (error) {
+        res.status(401).json({
+            status: 'fail',
+            error: { error },
         });
-    } catch (e) {
-        res.status(401).send(e);
     }
 })
 
