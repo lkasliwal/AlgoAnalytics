@@ -105,19 +105,43 @@ Router.post('/api/parts/part-info-by-date', async (req, res) => {
         console.log("inside /api/parts/part-info-by-date");
         const { part_name, part_date } = req.body;
         console.log({ part_name }, { part_date });
-        // console.log("typeof(part_date) = ", typeof (part_date));
-        const partData = await parts.find(
-            { part_details_datewise: [{ part_date }] }
-        );
+        // const part = await parts.findOne({ part_name });
+        // console.log({ part });
+
+        // const partData = await parts.find(
+        //     {
+        //         part_name: {
+        //             part_name,
+        //             part_details_datewise: {
+        //                 "$in": [{ part_date: part_date }]
+        //             }
+        //         },
+        //     }
+        // );
+
+        const partData = await parts.findOne({ part_name: part_name })
+            // .aggregate([
+            //     {
+            //         $match: {
+            //             part_details_datewise: {
+            //                 $in: [{ part_date: part_date }]
+            //             }
+            //         },
+            //     },
+            //     {
+            //         $sort: { part_details_datewise: { part_date: 1 } },
+            //     },
+            // ]);
+
         console.log({ partData });
         res.status(200).json({
             status: 'success',
+            // results: (partData == {}) ? 0 : partData[0].part_details_datewise.length,
             data: {
                 partData
             }
         });
-    }
-    catch (e) {
+    } catch (e) {
         res.status(401).send(e);
     }
 })
@@ -127,7 +151,6 @@ Router.post('/api/parts/parts-info-by-date', async (req, res) => {
         console.log("inside /api/parts/parts-info-by-date");
         const { part_names, part_date } = req.body;
         console.log({ part_names }, { part_date });
-        // console.log("typeof(part_date) = ", typeof (part_date));
         const partsData = await parts.find(
             { part_details_datewise: [{ part_date }] }
         );
@@ -138,8 +161,7 @@ Router.post('/api/parts/parts-info-by-date', async (req, res) => {
                 partsData
             }
         });
-    }
-    catch (e) {
+    } catch (e) {
         res.status(401).send(e);
     }
 })
