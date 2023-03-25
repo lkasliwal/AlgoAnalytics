@@ -100,30 +100,44 @@ Router.post('/api/parts/selectpart', async (req, res) => {
     }
 })
 
-Router.post('/api/parts/get-part-info-by-date', async (req, res) => {
+Router.post('/api/parts/part-info-by-date', async (req, res) => {
     try {
-        console.log("inside /api/parts/get-part-info-by-date");
-        const part_date = req.body.date;
-        console.log({ part_date });
+        console.log("inside /api/parts/part-info-by-date");
+        const { part_name, part_date } = req.body;
+        console.log({ part_name }, { part_date });
         // console.log("typeof(part_date) = ", typeof (part_date));
         const partData = await parts.find(
             { part_details_datewise: [{ part_date }] }
         );
         console.log({ partData });
-        if (partData == {}) {
-            res.status(204).json({
-                status: 'success',
-                data: null
-            });
-        } else {
-            res.status(200).json({
-                status: 'success',
-                data: {
-                    partData
-                }
-            });
-        }
+        res.status(200).json({
+            status: 'success',
+            data: {
+                partData
+            }
+        });
+    }
+    catch (e) {
+        res.status(401).send(e);
+    }
+})
 
+Router.post('/api/parts/parts-info-by-date', async (req, res) => {
+    try {
+        console.log("inside /api/parts/parts-info-by-date");
+        const { part_names, part_date } = req.body;
+        console.log({ part_names }, { part_date });
+        // console.log("typeof(part_date) = ", typeof (part_date));
+        const partsData = await parts.find(
+            { part_details_datewise: [{ part_date }] }
+        );
+        console.log({ partsData });
+        res.status(200).json({
+            status: 'success',
+            data: {
+                partsData
+            }
+        });
     }
     catch (e) {
         res.status(401).send(e);
