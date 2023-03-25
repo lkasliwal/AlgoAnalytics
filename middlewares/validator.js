@@ -13,6 +13,10 @@ const signInValidator = [
     body('password').trim().not().isEmpty().withMessage('password missing')
 ]
 
+const companyValidator = [
+    body('company').not().isEmpty().withMessage('company missing'),
+    body('designation').not().trim().isEmpty().withMessage('designation missing')
+]
 const validate = (req, res, next) => {
     const error = validationResult(req)
     if (!error.isEmpty()) {
@@ -20,4 +24,4 @@ const validate = (req, res, next) => {
     }
     next();
 }
-module.exports = { userValidator, validate, ValidatePassword, signInValidator }
+module.exports = { userValidator, validate, ValidatePassword, signInValidator ,companyValidator}

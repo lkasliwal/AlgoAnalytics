@@ -10,13 +10,13 @@ const { generateRandomByte } = require('../utils/mail');
 const passwordResetToken = require('../models/passwordResetToken');
 
 const create = async (req, res) => {
-    const { name, email, password } = req.body
+    const { name, email, password,designation,company } = req.body
     const oldUser = await User.findOne({ email, isVerified: true });
     if (oldUser) return sendError(res, "This email is already in use!")
     const oldUnverifiedUser = await User.findOne({ email, isVerified: false });
     var newUser=oldUnverifiedUser;
     if (!oldUnverifiedUser) {
-        newUser = new User({ name, email, password })
+        newUser = new User({ name, email, password, designation,company })
         await newUser.save()
     }
     // generate 6 digit otp
@@ -64,7 +64,9 @@ const create = async (req, res) => {
             id: newUser._id,
             name: newUser.name,
             email: newUser.email,
-            role: newUser.role
+            role: newUser.role,
+            company: newUser.company,
+            designation: newUser.designation
         }
     })
 };
@@ -297,6 +299,15 @@ const signIn = async (req, res) => {
     return res.json({ user: { Id: _id, name, role, email, isVerified, token: jwtToken } })
 }
 
+const editOrganisation = async(req,res) =>{
+    const {email,company,designation} = req.body;
+    const user = await User.findOne({email});
+    if (!user) return sendError(res, 'Incorrect mail entered');
+    user.company = company;
+    user.designation = designation;
+    await user.save();
+    res.json({message:"Company specific details updated!"});
+}
 
 
-module.exports = { create, verifyEmail, resendEmailVerificationToken, forgotPassword, sentResetPasswordStatus, resetPassword, signIn }
+module.exports = { create, verifyEmail, resendEmailVerificationToken, forgotPassword, sentResetPasswordStatus, resetPassword, signIn ,editOrganisation}

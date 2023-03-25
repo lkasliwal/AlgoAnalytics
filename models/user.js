@@ -23,6 +23,14 @@ const userSchema = mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  company:{
+    type: String,
+    required: true
+  },
+  designation:{
+    type: String,
+    required: true
+  },
   isVerified: {
     type: Boolean,
     default: false,
