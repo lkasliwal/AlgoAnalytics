@@ -24,10 +24,11 @@ const printResultDetails = (result) => {
 }
 
 const getCurrentDate = () => {
+    console.log("inside getCurrentDate");
     const date = new Date();
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
     let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
     let currentDate = `${day}-${month}-${year}`;
     console.log({ currentDate });
     return currentDate;
@@ -100,51 +101,79 @@ Router.post('/api/parts/selectpart', async (req, res) => {
     }
 })
 
+const filterPartDetails = async (part_name, part_date) => {
+    let partData = await parts.find(
+        {
+            part_name: {
+                part_name,
+                part_details_datewise: {
+                    "$in": [{ part_date: part_date }]
+                }
+            },
+        }
+    );
+
+    partData = await parts.select({ part_details_datewise: { $in: [{ part_date: part_date }] } })
+        .aggregate([
+            {
+                $match: {
+                    part_details_datewise: {
+                        $in: [{ part_date: part_date }]
+                    }
+                },
+            },
+            {
+                $sort: { part_details_datewise: { part_date: 1 } },
+            },
+        ]);
+
+    return partData;
+}
+
 Router.post('/api/parts/part-info-by-date', async (req, res) => {
     try {
         console.log("inside /api/parts/part-info-by-date");
         const { part_name, part_date } = req.body;
         console.log({ part_name }, { part_date });
-        // const part = await parts.findOne({ part_name });
+        const part = await parts.findOne({ part_name });
         // console.log({ part });
-
-        // const partData = await parts.find(
-        //     {
-        //         part_name: {
-        //             part_name,
-        //             part_details_datewise: {
-        //                 "$in": [{ part_date: part_date }]
-        //             }
-        //         },
-        //     }
-        // );
-
-        const partData = await parts.findOne({ part_name: part_name })
-            // .select({part_details_datewise: {$in: [{ part_date: part_date }]}})
-
-            // .aggregate([
-            //     {
-            //         $match: {
-            //             part_details_datewise: {
-            //                 $in: [{ part_date: part_date }]
-            //             }
-            //         },
-            //     },
-            //     {
-            //         $sort: { part_details_datewise: { part_date: 1 } },
-            //     },
-            // ]);
-
-        console.log({ partData });
-        res.status(200).json({
-            status: 'success',
-            // results: (partData == {}) ? 0 : partData[0].part_details_datewise.length,
-            data: {
-                partData
+        if (!part) {
+            return sendError(res, "Part does not exist!. Please try choosing a different part.", 400);
+        } else if (!part.part_details_datewise) {
+            return sendError(res, "Part details not found!. Please try choosing a different part.", 400);
+        }
+        let modifiedPartDetails = await part.part_details_datewise;
+        // console.log({ modifiedPartDetails });
+        modifiedPartDetails = await modifiedPartDetails.filter(
+            function (e) {
+                return (e.part_date === part_date);
             }
+        );
+        const size = modifiedPartDetails.length;
+        console.log({ modifiedPartDetails }, { size });
+        part.part_details_datewise = modifiedPartDetails;
+        // console.log({ part });
+        if (size == 0) {
+            return res.status(200).json({
+                status: 'success',
+                message: "No Part Details found for this date!. Please try choosing a different date.",
+                results: 0,
+                data: null
+            });
+        } else {
+            return res.status(200).json({
+                status: 'success',
+                results: size,
+                data: {
+                    part
+                }
+            });
+        }
+    } catch (error) {
+        res.status(401).json({
+            status: 'fail',
+            error: { error },
         });
-    } catch (e) {
-        res.status(401).send(e);
     }
 })
 
