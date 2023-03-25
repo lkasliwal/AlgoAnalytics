@@ -120,6 +120,8 @@ Router.post('/api/parts/part-info-by-date', async (req, res) => {
         // );
 
         const partData = await parts.findOne({ part_name: part_name })
+            // .select({part_details_datewise: {$in: [{ part_date: part_date }]}})
+
             // .aggregate([
             //     {
             //         $match: {
