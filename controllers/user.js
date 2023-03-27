@@ -300,13 +300,12 @@ const signIn = async (req, res) => {
 }
 
 const editOrganisation = async(req,res) =>{
-    const {email,company,designation} = req.body;
+    const {email,designation} = req.body;
     const user = await User.findOne({email});
     if (!user) return sendError(res, 'Incorrect mail entered');
-    user.company = company;
     user.designation = designation;
     await user.save();
-    res.json({message:"Company specific details updated!"});
+    res.json({message:"Designation updated!"});
 }
 
 
