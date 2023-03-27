@@ -293,7 +293,7 @@ const signIn = async (req, res) => {
     if (!match) {
         return sendError(res, 'Incorrect mail or password');
     }
-    const { _id, name, isVerified, role } = user;
+    const { _id, name, isVerified, role,company, designation } = user;
     const jwtToken = jwt.sign({ userId: _id }, process.env.JWT_SECRET);
 
     return res.json({ user: { Id: _id, name, role, email, isVerified, token: jwtToken,company, designation } })
