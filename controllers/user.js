@@ -296,7 +296,7 @@ const signIn = async (req, res) => {
     const { _id, name, isVerified, role } = user;
     const jwtToken = jwt.sign({ userId: _id }, process.env.JWT_SECRET);
 
-    return res.json({ user: { Id: _id, name, role, email, isVerified, token: jwtToken } })
+    return res.json({ user: { Id: _id, name, role, email, isVerified, token: jwtToken,company, designation } })
 }
 
 const editOrganisation = async(req,res) =>{
