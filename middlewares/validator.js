@@ -14,7 +14,6 @@ const signInValidator = [
 ]
 
 const companyValidator = [
-    body('company').not().isEmpty().withMessage('company missing'),
     body('designation').not().trim().isEmpty().withMessage('designation missing')
 ]
 const validate = (req, res, next) => {
