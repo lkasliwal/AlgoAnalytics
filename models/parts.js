@@ -20,7 +20,13 @@ const partSchema = mongoose.Schema({
       part_ok_total: Number,
       part_not_ok_total: Number
     }
-  ]
+  ],
+  part_image: {
+    type:String
+  },
+  part_description: {
+    type:String
+  }
 })
 
 module.exports = mongoose.model('Part', partSchema)

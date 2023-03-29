@@ -8,6 +8,8 @@ const multer = require('multer');
 const AdmZip = require('adm-zip');
 const path = require('path');
 const fs = require('fs');
+const path1 = require('path')
+const imageToBase64 = require('image-to-base64');
 
 // Define storage engine for Multer
 const storage = multer.diskStorage({
@@ -36,7 +38,7 @@ Router.post('/api/admin/addpart', upload.single('file'), async (req, res) => {
   console.log(path)
   const part = new Part({ part_name });
   try {
-    await part.save();
+    // await part.save();
     const filePath = req.file.path;
     // Create a new instance of the AdmZip class
     const zip = new AdmZip(filePath);
@@ -60,18 +62,50 @@ Router.post('/api/admin/addpart', upload.single('file'), async (req, res) => {
     // Send a response back to the client
 
 
+    var filePath1=path1.resolve(__dirname, '..');
+    filePath2=filePath1+"/uploads/"+part_name // Set the path to the file you want to delete
+    console.log(filePath1)
 
-    const filePath1 = path.join(__dirname, 'uploads/', part_name); // Set the path to the file you want to delete
-
-    fs.unlink(filePath1, (err) => {
+    fs.unlink(filePath2, (err) => {
       if (err) {
         console.error(err);
         return;
       }
       console.log('File deleted successfully');
     });
-    res.json({ message: 'File uploaded and extracted successfully' });
+    // res.json({ message: 'File uploaded and extracted successfully' });
     // res.status(200).send({part});
+    
+    // const imageBuffer = fs.readFileSync(filePath1+"\\uploads\\"+part_name+"_extracted\\Biometric.jpeg",'base64');
+    // console.log("Hiii")
+    // // Convert the image buffer to a Base64 string
+    // const base64Image = imageBuffer.toString('base64');
+    // console.log(base64Image)
+    var part_image=""
+    await imageToBase64(filePath1+"\\uploads\\"+part_name+"_extracted\\Biometric.jpeg") // Path to the image
+    .then(
+        (response) => {
+            part_image=response; // "cGF0aC90by9maWxlLmpwZw=="
+        }
+    )
+    .catch(
+        (error) => {
+            console.log(error); // Logs an error if there was one
+        }
+    )
+    var part_description="1111"
+    fs.readFile(filePath1+"\\uploads\\"+part_name+"_extracted\\description.txt", 'utf-8', async(err, data) => {
+      if (err) throw err;
+      console.log(data)
+      part_description=data;
+      console.log(part_description)
+      // console.log(part_description)
+      const part = new Part({ part_name ,part_image,part_description});
+      await part.save()
+      // res.json({ message: 'File uploaded and extracted successfully' });
+    })
+    
+    res.json({ message: 'File uploaded and extracted successfully' });
   }
   catch (e) {
 
